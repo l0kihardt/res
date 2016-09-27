@@ -1,2 +1,0 @@
-from pwn import *
-shellcode = ""
