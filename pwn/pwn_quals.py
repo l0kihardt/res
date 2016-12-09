@@ -7,8 +7,10 @@ import os, sys
 DEBUG = 1
 
 # modify this
+elf = ELF('./')
+
 if DEBUG:
-    io = process('./calc.exe')
+    io = process('./')
 else:
     io = remote(sys.argv[1], int(sys.argv[2]))
 
@@ -46,10 +48,10 @@ def dehex(s):
 
 # define exploit function here
 def pwn():
-    
-    io.interactive()
-    return
+	
+	io.interactive()
+	return
 
 if __name__ == '__main__':
-    pause()
-    pwn()
+	pause()
+	pwn()
