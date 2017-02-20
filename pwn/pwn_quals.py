@@ -7,10 +7,10 @@ import os, sys
 DEBUG = 1
 
 # modify this
-elf = ELF('./')
+elf = ELF('./tea')
 
 if DEBUG:
-    io = process('./')
+    io = process('./tea')
 else:
     io = remote(sys.argv[1], int(sys.argv[2]))
 
@@ -49,9 +49,11 @@ def dehex(s):
 # define exploit function here
 def pwn():
 	
-	io.interactive()
-	return
+    io.interactive()
+    return
 
 if __name__ == '__main__':
-	pause()
-	pwn()
+    
+    pause()
+    pwn()
+    
