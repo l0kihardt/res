@@ -1,6 +1,5 @@
 from pwn import *
 #io = process('./secretgarden', env = {'LD_PRELOAD' : './libc_64.so.6'})
-io = remote('chall.pwnable.tw',10203)
 l = ELF('./libc_64.so.6')
 
 context.log_level = 'info'

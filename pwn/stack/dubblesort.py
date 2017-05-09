@@ -1,6 +1,5 @@
 from pwn import *
 #io = process(['./dubblesort'])
-io = remote('chall.pwnable.tw', 10101)
 #pause()
 context.log_level = 'debug'
 

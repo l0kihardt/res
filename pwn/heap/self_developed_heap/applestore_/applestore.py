@@ -1,6 +1,5 @@
 from pwn import *
 #io = process('./applestore')
-io = remote('chall.pwnable.tw',10104)
 context.log_level = 'debug'
 pause()
 

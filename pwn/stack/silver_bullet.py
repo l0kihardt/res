@@ -2,7 +2,6 @@ from pwn import *
 #io = process('./silver_bullet')
 #context.log_level = 'debug'
 #pause()
-io = remote('chall.pwnable.tw', 10103)
 
 def create(desc):
     io.recvuntil('Your choice :')

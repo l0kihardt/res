@@ -1,7 +1,5 @@
 from pwn import *
 
-p = process("./seethefile")
-#p = remote("chall.pwnable.tw", 10200)
 pause()
 def open_file(name):
     p.sendlineafter(":", "1")

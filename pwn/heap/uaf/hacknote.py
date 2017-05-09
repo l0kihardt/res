@@ -1,6 +1,5 @@
 from pwn import *
 #io = process('./hacknote')
-io = remote('chall.pwnable.tw', 10102)
 context.log_level = 'debug'
 def add_note(size, content):
     io.recvuntil("Your choice :")
