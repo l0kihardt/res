@@ -15,8 +15,9 @@ else:
     io = remote(sys.argv[1], int(sys.argv[2]))
 
 if DEBUG: context(log_level='debug')
+
 pause()
 
-# define symbols and offsets here
 
 
+io.interactive()
