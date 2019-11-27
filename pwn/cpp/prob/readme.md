@@ -122,3 +122,8 @@ class Process
 ```
 Variable *position* was not intialized when a *Process* is created. So if it used an old chunk, there maybe some left value in it...
 
+# leak
+To make a leak, we just need 
+
+# exploit
+
