@@ -1,5 +1,5 @@
 # information
-Running on Ubuntu 16.04, this is a pretty traditional heap exploit challenge.
+Running on Ubuntu 19.04, this is a pretty traditional heap exploit challenge.
 Only two functions exists in it, *new()* and *delete()*.
 To be noted, the size of the chunk should be less than 0x78.
 ```C
