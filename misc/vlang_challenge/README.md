@@ -1,8 +1,8 @@
 # Chall
 There are not much document about this challenge, so you just need to google all the syntax
 ## Install
-From this (link)[https://vlang.io/]
-or you can download it from (github)[https://github.com/vlang/v]
+From this [link](https://vlang.io/)
+or you can download it from [github](https://github.com/vlang/v)
 
 ## Compile 
 ```
