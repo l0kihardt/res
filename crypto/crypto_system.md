@@ -1,9 +1,43 @@
 # 共模攻击
+C = P ^ e mod n
 
 RSA加密的时候使用相同的n和不同的e
 得到不同的结果，可以使用共模攻击。
 
 # exp
+调用abs函数导致可以输入2147483648得到一个负数，从而修改掉e
+```
+
+  v11 = __readfsqword(0x28u);
+  v0 = &s;
+  memset(&s, 0, 9uLL);
+  s = 0x10001;
+  LODWORD(v8) = 0;
+  while ( (signed int)v8 <= 4 )
+  {
+    puts("index?");
+    HIDWORD(v8) = abs(readn()) % 5;
+    v0 = (int *)"data?";
+    puts("data?");
+    v10[SHIDWORD(v8)] = getchar();
+    getchar();
+    LODWORD(v8) = v8 + 1;
+  }
+  v1 = BN_new(v0, 0LL);
+  v2 = BN_new(v0, 0LL);
+  v3 = BN_new(v0, 0LL);
+  v4 = BN_bin2bn(v10, 5LL, 0LL);
+  v5 = BN_CTX_new(v10, 5LL);
+  BN_add_word(v1, s);
+  BN_mod_exp(v2, bignb_flag, v1, bignb, v5);
+  BN_mod_mul(v3, v2, v4, bignb, v5);
+  v6 = BN_bn2hex(v3);
+  printf("result: %s\n", v6, v8);
+  CRYPTO_free(v6, "main.c", 75LL);
+  BN_free(v1);
+```
+读了5个字节可以修改掉e，并且让最后所乘的v5为1
+这样就能够使用共模攻击了
 ```python
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
